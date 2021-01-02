@@ -7,44 +7,16 @@ workspace "dsound"
 
 	location "build"
 
-	files { "src/dsound.cpp" }
-	files { "src/MemoryMgr.h" }
-	files { "src/dsound.def" }
-
-local function debugConfig()
-	return
-	{
-		defines { "DEBUG" },
-		symbols "full",
-		optimize "off",
-		runtime "debug",
-		editAndContinue "off",
-		flags { "NoIncrementalLink" },
-		staticruntime "on",
-		libdirs { "lib/xasdk/static/mtd" },
-	}
-end
-
-local function releaseConfig()
-	return
-	{
-		defines { "NDEBUG" },
-		symbols "on",
-		optimize "speed",
-		runtime "release",
-		staticruntime "on",
-		flags { "LinkTimeOptimization" },
-		linkoptions { "/OPT:NOICF" },
-		libdirs { "lib/xasdk/static/mt" },
-	}
-end
-
 project "dsound"
 	kind "SharedLib"
 	language "C++"
 	targetname "dsound"
 	targetdir "bin/%{cfg.buildcfg}"
 	targetextension ".dll"
+
+	files { "src/dsound.cpp" }
+	files { "src/MemoryMgr.h" }
+	files { "src/dsound.def" }
 
 	characterset ("MBCS")
 	toolset ("v141_xp")
@@ -55,7 +27,19 @@ project "dsound"
 	defines { "WIN32_LEAN_AND_MEAN", "_CRT_SECURE_NO_WARNINGS", "_CRT_NONSTDC_NO_DEPRECATE", "_USE_32BIT_TIME_T", "NOMINMAX" }
 
 	filter "configurations:Debug"
-		debugConfig()
+		defines { "DEBUG" }
+		symbols "full"
+		optimize "off"
+		runtime "debug"
+		editAndContinue "off"
+		flags { "NoIncrementalLink" }
+		staticruntime "on"
 
 	filter "configurations:Release"
-		releaseConfig()
+		defines { "NDEBUG" }
+		symbols "on"
+		optimize "speed"
+		runtime "release"
+		staticruntime "on"
+		flags { "LinkTimeOptimization" }
+		linkoptions { "/OPT:NOICF" }
