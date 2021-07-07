@@ -58,24 +58,43 @@ void init_dsound(HINSTANCE hInst)
 	dsound.DirectSoundCaptureCreate8 = GetProcAddress(dsound.dll, "DirectSoundCaptureCreate8");
 }
 
-char *stristr(char *str1, char *str2)
+char *stristr(const char *str1, const char *str2)
 {
-	char tmp1[MAX_PATH], tmp2[MAX_PATH];
+	char *cp = (char *)str1;
+	char *s1;
+	char *s2;
 
-	strncpy_s(tmp1, str1, sizeof(tmp1));
-	strncpy_s(tmp2, str2, sizeof(tmp2));
+	if (!*str2) return (char *)str1;
 
-	strupr(tmp1);
-	strupr(tmp2);
-
-	char *result = strstr(tmp1, tmp2);
-
-	if (result)
+	while (*cp)
 	{
-		result = &str1[result - tmp1];
+		s1 = cp;
+		s2 = (char *)str2;
+
+		while (*s1 && *s2 && !(tolower(*s1) - tolower(*s2)))
+		{
+			s1++;
+			s2++;
+		}
+
+		if (!*s2) return cp;
+
+		cp++;
 	}
 
-	return result;
+	return NULL;
+}
+
+intptr_t _findonce(char *filename, _finddata_t *finddata)
+{
+	intptr_t handle = _findfirst(filename, finddata);
+
+	if (handle != -1)
+	{
+		_findclose(handle);
+	}
+
+	return handle;
 }
 
 void init(void)
@@ -89,7 +108,7 @@ void init(void)
 	char save_cwd[MAX_PATH];
 	strcpy(save_cwd, cwd);
 
-	if (_findfirst("language_x1.dll", &fd) == -1)
+	if (_findonce("language_x1.dll", &fd) == -1)
 	{
 		size_t cwd_len = strlen(cwd);
 		size_t folder_len = strlen("\\age2_x1");
